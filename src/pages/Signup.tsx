@@ -89,18 +89,7 @@ export default function Signup() {
           })
           .eq("id", data.user.id);
 
-        // Assign student role
-        const { error: roleError } = await supabase
-          .from("user_roles")
-          .insert({ 
-            user_id: data.user.id, 
-            role: 'student' 
-          });
-
-        if (roleError) {
-          console.error("Role assignment error:", roleError);
-        }
-
+        // Student role is automatically assigned by database trigger
         toast.success("Account created successfully! Please login.");
         setTimeout(() => navigate("/login"), 1000);
       }
