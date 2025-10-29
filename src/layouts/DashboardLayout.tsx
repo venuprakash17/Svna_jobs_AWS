@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Outlet, NavLink, useLocation, useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { 
   LayoutDashboard, 
   FileText, 
@@ -12,7 +13,11 @@ import {
   Menu,
   X,
   LogOut,
-  User
+  User,
+  School,
+  UserCheck,
+  FileQuestion,
+  Target
 } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
@@ -31,26 +36,85 @@ const studentNavItems = [
   { icon: FileText, label: "Resume", path: "/resume" },
   { icon: Code2, label: "Coding Practice", path: "/coding" },
   { icon: ClipboardCheck, label: "Tests", path: "/tests" },
+  { icon: Target, label: "Placement Training", path: "/placement-training" },
   { icon: Briefcase, label: "Jobs & Placement", path: "/jobs" },
   { icon: Calendar, label: "Attendance", path: "/attendance" },
   { icon: BarChart3, label: "Analytics", path: "/analytics" },
 ];
 
+const facultyNavItems = [
+  { icon: LayoutDashboard, label: "Dashboard", path: "/faculty/dashboard" },
+  { icon: FileQuestion, label: "Manage Quizzes", path: "/faculty/quizzes" },
+  { icon: Code2, label: "Coding Problems", path: "/faculty/coding-problems" },
+  { icon: UserCheck, label: "Attendance", path: "/faculty/attendance" },
+  { icon: BarChart3, label: "Analytics", path: "/analytics" },
+];
+
+const adminNavItems = [
+  { icon: LayoutDashboard, label: "Dashboard", path: "/admin/dashboard" },
+  { icon: Bell, label: "Notifications", path: "/admin/notifications" },
+  { icon: FileQuestion, label: "Manage Quizzes", path: "/faculty/quizzes" },
+  { icon: Code2, label: "Coding Problems", path: "/faculty/coding-problems" },
+  { icon: BarChart3, label: "Analytics", path: "/analytics" },
+];
+
+const superAdminNavItems = [
+  { icon: LayoutDashboard, label: "Dashboard", path: "/superadmin/dashboard" },
+  { icon: School, label: "Manage Colleges", path: "/superadmin/colleges" },
+  { icon: Bell, label: "Notifications", path: "/admin/notifications" },
+  { icon: User, label: "Manage Users", path: "/superadmin/users" },
+];
+
 export const DashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    // Clear any stored auth data
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('userRole');
-    localStorage.removeItem('userId');
-    // Navigate to login
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        navigate('/login');
+        return;
+      }
+
+      const { data } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .single();
+
+      if (data) {
+        setUserRole(data.role);
+      }
+    };
+
+    fetchUserRole();
+  }, [navigate]);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     navigate('/login');
   };
 
   const isActive = (path: string) => location.pathname === path;
+
+  const getNavItems = () => {
+    switch (userRole) {
+      case 'faculty':
+        return facultyNavItems;
+      case 'admin':
+        return adminNavItems;
+      case 'super_admin':
+        return superAdminNavItems;
+      default:
+        return studentNavItems;
+    }
+  };
+
+  const navItems = getNavItems();
 
   return (
     <div className="min-h-screen bg-background">
@@ -113,7 +177,7 @@ export const DashboardLayout = () => {
           `}
         >
           <nav className="flex flex-col gap-1 p-4">
-            {studentNavItems.map((item) => (
+            {navItems.map((item) => (
               <NavLink
                 key={item.path}
                 to={item.path}
