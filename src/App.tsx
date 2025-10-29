@@ -13,6 +13,9 @@ import Tests from "./pages/Tests";
 import Jobs from "./pages/Jobs";
 import Attendance from "./pages/Attendance";
 import Analytics from "./pages/Analytics";
+import FacultyDashboard from "./pages/faculty/FacultyDashboard";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import SuperAdminDashboard from "./pages/superadmin/SuperAdminDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +31,7 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           
+          {/* Student Routes */}
           <Route element={<DashboardLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/resume" element={<Resume />} />
@@ -36,6 +40,21 @@ const App = () => (
             <Route path="/jobs" element={<Jobs />} />
             <Route path="/attendance" element={<Attendance />} />
             <Route path="/analytics" element={<Analytics />} />
+          </Route>
+
+          {/* Faculty Routes */}
+          <Route element={<DashboardLayout />}>
+            <Route path="/faculty/dashboard" element={<FacultyDashboard />} />
+          </Route>
+
+          {/* Admin Routes */}
+          <Route element={<DashboardLayout />}>
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          </Route>
+
+          {/* Super Admin Routes */}
+          <Route element={<DashboardLayout />}>
+            <Route path="/superadmin/dashboard" element={<SuperAdminDashboard />} />
           </Route>
           
           <Route path="*" element={<NotFound />} />

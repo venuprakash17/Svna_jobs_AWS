@@ -19,12 +19,30 @@ export default function Signup() {
 
   const handleSignup = (e: React.FormEvent) => {
     e.preventDefault();
+    
     if (formData.password !== formData.confirmPassword) {
       toast.error("Passwords don't match!");
       return;
     }
-    toast.success("Account created successfully!");
-    navigate("/dashboard");
+    
+    // Mock registration - in real app, this would call an API
+    if (formData.name && formData.email && formData.password && formData.rollNumber) {
+      // Store temporary auth data
+      localStorage.setItem('newUser', JSON.stringify({
+        name: formData.name,
+        email: formData.email,
+        rollNumber: formData.rollNumber
+      }));
+      
+      toast.success(`Welcome ${formData.name}! Account created successfully!`);
+      
+      // Navigate to login
+      setTimeout(() => {
+        navigate('/login');
+      }, 1200);
+    } else {
+      toast.error("Please fill in all fields");
+    }
   };
 
   return (
@@ -39,7 +57,7 @@ export default function Signup() {
             </div>
           </div>
           <CardTitle className="text-2xl font-bold">Create Account</CardTitle>
-          <CardDescription>Join EduPlacement AI as a student</CardDescription>
+          <CardDescription>Join SvnaJobs as a student</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSignup} className="space-y-4">

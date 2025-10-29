@@ -95,6 +95,95 @@ export const codingProblems = [
   { id: 6, title: "Merge K Sorted Lists", difficulty: "Hard", tags: ["Linked List", "Heap"], solved: false, acceptance: 47 },
 ];
 
+// Job Application Tracking Data
+export const jobApplications = [
+  {
+    id: 1,
+    jobId: 1,
+    studentId: "ST001",
+    studentName: "Arjun Mehta",
+    company: "Microsoft",
+    role: "SDE Intern",
+    appliedDate: "2025-10-25T10:30:00",
+    status: "In Progress",
+    currentRound: "Technical Round 1",
+    resumeVersion: "v2.3",
+    atsScore: 82
+  },
+  {
+    id: 2,
+    jobId: 1,
+    studentId: "ST002",
+    studentName: "Priya Singh",
+    company: "Microsoft",
+    role: "SDE Intern",
+    appliedDate: "2025-10-26T14:20:00",
+    status: "Shortlisted",
+    currentRound: "Technical Round 2",
+    resumeVersion: "v3.1",
+    atsScore: 88
+  },
+  {
+    id: 3,
+    jobId: 2,
+    studentId: "ST001",
+    studentName: "Arjun Mehta",
+    company: "Amazon",
+    role: "Software Engineer",
+    appliedDate: "2025-10-27T09:15:00",
+    status: "Applied",
+    currentRound: "Online Test",
+    resumeVersion: "v2.4",
+    atsScore: 85
+  },
+  {
+    id: 4,
+    jobId: 3,
+    studentId: "ST003",
+    studentName: "Rahul Kumar",
+    company: "Flipkart",
+    role: "Full Stack Developer",
+    appliedDate: "2025-10-28T11:45:00",
+    status: "Applied",
+    currentRound: "Coding Test",
+    resumeVersion: "v1.8",
+    atsScore: 78
+  }
+];
+
+// Application Analytics Data
+export const applicationAnalytics = {
+  totalApplications: 247,
+  activeApplications: 189,
+  shortlisted: 45,
+  offered: 13,
+  averageTimeToResponse: "5.2 days",
+  topCompanies: [
+    { company: "Microsoft", applications: 45, shortlisted: 12, offers: 3 },
+    { company: "Amazon", applications: 38, shortlisted: 8, offers: 2 },
+    { company: "Google", applications: 32, shortlisted: 10, offers: 4 },
+    { company: "Flipkart", applications: 28, shortlisted: 6, offers: 2 },
+  ],
+  applicationsByMonth: [
+    { month: "Jun", applications: 32 },
+    { month: "Jul", applications: 45 },
+    { month: "Aug", applications: 52 },
+    { month: "Sep", applications: 58 },
+    { month: "Oct", applications: 60 },
+  ],
+  applicationsByStatus: [
+    { status: "Applied", count: 102 },
+    { status: "In Progress", count: 87 },
+    { status: "Shortlisted", count: 45 },
+    { status: "Offered", count: 13 },
+  ],
+  conversionRate: {
+    appliedToShortlisted: 23.8,
+    shortlistedToOffered: 28.9,
+    overallConversion: 6.9
+  }
+};
+
 export const allJobs = [
   {
     id: 1,
@@ -109,7 +198,9 @@ export const allJobs = [
     description: "Looking for passionate developers with strong DSA skills",
     requirements: ["B.Tech/M.Tech", "CGPA > 7.5", "Strong coding skills"],
     status: "Applied",
-    rounds: ["Aptitude", "Technical Round 1", "Technical Round 2", "HR"]
+    rounds: ["Aptitude", "Technical Round 1", "Technical Round 2", "HR"],
+    totalApplicants: 45,
+    shortlisted: 12
   },
   {
     id: 2,
@@ -124,7 +215,9 @@ export const allJobs = [
     description: "Join one of the world's most customer-centric companies",
     requirements: ["B.Tech/M.Tech", "CGPA > 7.0", "Problem solving"],
     status: "Not Applied",
-    rounds: ["Online Test", "Technical Interview", "Bar Raiser", "HR"]
+    rounds: ["Online Test", "Technical Interview", "Bar Raiser", "HR"],
+    totalApplicants: 38,
+    shortlisted: 8
   },
   {
     id: 3,
@@ -139,7 +232,9 @@ export const allJobs = [
     description: "Build scalable e-commerce solutions",
     requirements: ["B.Tech", "CGPA > 7.0", "Full stack experience"],
     status: "Not Applied",
-    rounds: ["Coding Test", "Technical Round", "Manager Round"]
+    rounds: ["Coding Test", "Technical Round", "Manager Round"],
+    totalApplicants: 28,
+    shortlisted: 6
   },
   {
     id: 4,
@@ -154,7 +249,9 @@ export const allJobs = [
     description: "Work on products used by billions",
     requirements: ["B.Tech/M.Tech", "CGPA > 8.0", "Strong fundamentals"],
     status: "Not Applied",
-    rounds: ["Phone Screen", "Technical Interview 1", "Technical Interview 2", "Hiring Committee"]
+    rounds: ["Phone Screen", "Technical Interview 1", "Technical Interview 2", "Hiring Committee"],
+    totalApplicants: 32,
+    shortlisted: 10
   }
 ];
 

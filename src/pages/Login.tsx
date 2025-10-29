@@ -16,9 +16,35 @@ export default function Login() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // Mock login - in production, this would call an API
-    toast.success("Login successful!");
-    navigate("/dashboard");
+    
+    // Mock authentication - in real app, this would call an API
+    if (email && password) {
+      // Store auth data
+      localStorage.setItem('authToken', 'mock-token-12345');
+      localStorage.setItem('userRole', role);
+      localStorage.setItem('userId', role === 'student' ? 'ST001' : 'FAC001');
+      
+      toast.success(`Login successful! Welcome ${role}!`);
+      
+      // Navigate based on role
+      setTimeout(() => {
+        switch(role) {
+          case 'faculty':
+            navigate('/faculty/dashboard');
+            break;
+          case 'admin':
+            navigate('/admin/dashboard');
+            break;
+          case 'superadmin':
+            navigate('/superadmin/dashboard');
+            break;
+          default:
+            navigate('/dashboard');
+        }
+      }, 800);
+    } else {
+      toast.error("Please enter valid credentials");
+    }
   };
 
   return (
@@ -33,7 +59,7 @@ export default function Login() {
             </div>
           </div>
           <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
-          <CardDescription>Sign in to your EduPlacement AI account</CardDescription>
+          <CardDescription>Sign in to your SvnaJobs account</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">

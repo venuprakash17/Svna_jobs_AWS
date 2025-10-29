@@ -24,10 +24,23 @@ export default function Jobs() {
   });
 
   const handleApply = (jobId: number) => {
+    // In a real app, this would make an API call to submit the application
+    const job = allJobs.find(j => j.id === jobId);
+    
     toast({
-      title: "Application Submitted",
-      description: "Your application has been submitted successfully!",
+      title: "Application Submitted Successfully! ✅",
+      description: `Your application for ${job?.role} at ${job?.company} has been submitted. We'll notify you about the next steps.`,
     });
+
+    // Update job status locally (in real app, this would be done via API)
+    const jobIndex = allJobs.findIndex(j => j.id === jobId);
+    if (jobIndex !== -1) {
+      allJobs[jobIndex].status = "Applied";
+    }
+    
+    // Trigger a re-render
+    setSelectedJob(null);
+    window.location.reload();
   };
 
   return (
@@ -83,6 +96,11 @@ export default function Jobs() {
                       </div>
                     </div>
                   </div>
+                  {job.totalApplicants && (
+                    <p className="text-xs text-muted-foreground mt-2">
+                      {job.totalApplicants} applicants • {job.shortlisted} shortlisted
+                    </p>
+                  )}
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2 text-sm">
