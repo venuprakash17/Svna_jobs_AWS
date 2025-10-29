@@ -14,16 +14,485 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      attendance: {
+        Row: {
+          college_id: string | null
+          created_at: string | null
+          date: string
+          id: string
+          marked_by: string | null
+          status: string
+          student_id: string | null
+          subject: string
+        }
+        Insert: {
+          college_id?: string | null
+          created_at?: string | null
+          date: string
+          id?: string
+          marked_by?: string | null
+          status: string
+          student_id?: string | null
+          subject: string
+        }
+        Update: {
+          college_id?: string | null
+          created_at?: string | null
+          date?: string
+          id?: string
+          marked_by?: string | null
+          status?: string
+          student_id?: string | null
+          subject?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attendance_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      coding_problems: {
+        Row: {
+          college_id: string | null
+          constraints: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string
+          difficulty: string | null
+          id: string
+          is_placement: boolean | null
+          tags: string[] | null
+          test_cases: Json | null
+          title: string
+        }
+        Insert: {
+          college_id?: string | null
+          constraints?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description: string
+          difficulty?: string | null
+          id?: string
+          is_placement?: boolean | null
+          tags?: string[] | null
+          test_cases?: Json | null
+          title: string
+        }
+        Update: {
+          college_id?: string | null
+          constraints?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string
+          difficulty?: string | null
+          id?: string
+          is_placement?: boolean | null
+          tags?: string[] | null
+          test_cases?: Json | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coding_problems_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      coding_submissions: {
+        Row: {
+          code: string
+          execution_time: number | null
+          id: string
+          language: string
+          memory_used: number | null
+          problem_id: string | null
+          status: string | null
+          submitted_at: string | null
+          test_cases_passed: number | null
+          total_test_cases: number | null
+          user_id: string | null
+        }
+        Insert: {
+          code: string
+          execution_time?: number | null
+          id?: string
+          language: string
+          memory_used?: number | null
+          problem_id?: string | null
+          status?: string | null
+          submitted_at?: string | null
+          test_cases_passed?: number | null
+          total_test_cases?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          code?: string
+          execution_time?: number | null
+          id?: string
+          language?: string
+          memory_used?: number | null
+          problem_id?: string | null
+          status?: string | null
+          submitted_at?: string | null
+          test_cases_passed?: number | null
+          total_test_cases?: number | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coding_submissions_problem_id_fkey"
+            columns: ["problem_id"]
+            isOneToOne: false
+            referencedRelation: "coding_problems"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      colleges: {
+        Row: {
+          address: string | null
+          city: string | null
+          code: string
+          created_at: string | null
+          id: string
+          name: string
+          state: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          address?: string | null
+          city?: string | null
+          code: string
+          created_at?: string | null
+          id?: string
+          name: string
+          state?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          address?: string | null
+          city?: string | null
+          code?: string
+          created_at?: string | null
+          id?: string
+          name?: string
+          state?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          college_id: string | null
+          created_at: string | null
+          created_by: string | null
+          id: string
+          is_active: boolean | null
+          message: string
+          title: string
+          type: string | null
+        }
+        Insert: {
+          college_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          is_active?: boolean | null
+          message: string
+          title: string
+          type?: string | null
+        }
+        Update: {
+          college_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          is_active?: boolean | null
+          message?: string
+          title?: string
+          type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      placement_sessions: {
+        Row: {
+          college_id: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          end_time: string | null
+          id: string
+          is_active: boolean | null
+          session_type: string | null
+          start_time: string | null
+          title: string
+        }
+        Insert: {
+          college_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          end_time?: string | null
+          id?: string
+          is_active?: boolean | null
+          session_type?: string | null
+          start_time?: string | null
+          title: string
+        }
+        Update: {
+          college_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          end_time?: string | null
+          id?: string
+          is_active?: boolean | null
+          session_type?: string | null
+          start_time?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "placement_sessions_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          college_id: string | null
+          created_at: string | null
+          email: string | null
+          full_name: string | null
+          id: string
+          updated_at: string | null
+        }
+        Insert: {
+          college_id?: string | null
+          created_at?: string | null
+          email?: string | null
+          full_name?: string | null
+          id: string
+          updated_at?: string | null
+        }
+        Update: {
+          college_id?: string | null
+          created_at?: string | null
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quiz_attempts: {
+        Row: {
+          answers: Json | null
+          id: string
+          quiz_id: string | null
+          score: number | null
+          submitted_at: string | null
+          total_marks: number | null
+          user_id: string | null
+        }
+        Insert: {
+          answers?: Json | null
+          id?: string
+          quiz_id?: string | null
+          score?: number | null
+          submitted_at?: string | null
+          total_marks?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          answers?: Json | null
+          id?: string
+          quiz_id?: string | null
+          score?: number | null
+          submitted_at?: string | null
+          total_marks?: number | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_attempts_quiz_id_fkey"
+            columns: ["quiz_id"]
+            isOneToOne: false
+            referencedRelation: "quizzes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quiz_questions: {
+        Row: {
+          correct_answer: string
+          created_at: string | null
+          id: string
+          marks: number | null
+          option_a: string
+          option_b: string
+          option_c: string
+          option_d: string
+          question: string
+          quiz_id: string | null
+        }
+        Insert: {
+          correct_answer: string
+          created_at?: string | null
+          id?: string
+          marks?: number | null
+          option_a: string
+          option_b: string
+          option_c: string
+          option_d: string
+          question: string
+          quiz_id?: string | null
+        }
+        Update: {
+          correct_answer?: string
+          created_at?: string | null
+          id?: string
+          marks?: number | null
+          option_a?: string
+          option_b?: string
+          option_c?: string
+          option_d?: string
+          question?: string
+          quiz_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_questions_quiz_id_fkey"
+            columns: ["quiz_id"]
+            isOneToOne: false
+            referencedRelation: "quizzes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quizzes: {
+        Row: {
+          college_id: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          duration_minutes: number
+          end_time: string | null
+          id: string
+          is_active: boolean | null
+          start_time: string | null
+          subject: string | null
+          title: string
+          total_marks: number
+        }
+        Insert: {
+          college_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          duration_minutes?: number
+          end_time?: string | null
+          id?: string
+          is_active?: boolean | null
+          start_time?: string | null
+          subject?: string | null
+          title: string
+          total_marks?: number
+        }
+        Update: {
+          college_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          duration_minutes?: number
+          end_time?: string | null
+          id?: string
+          is_active?: boolean | null
+          start_time?: string | null
+          subject?: string | null
+          title?: string
+          total_marks?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quizzes_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          college_id: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          college_id?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          college_id?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_roles_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "super_admin" | "admin" | "faculty" | "student"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +619,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["super_admin", "admin", "faculty", "student"],
+    },
   },
 } as const
