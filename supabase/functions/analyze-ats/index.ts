@@ -66,26 +66,44 @@ Return ONLY a valid JSON object with:
 
     const userPrompt = `Analyze this resume for ATS compatibility:\n\n${resumeText}`;
 
-    console.log("Calling Lovable AI for ATS analysis...");
-
-    const aiResponse = await supabase.functions.invoke("ai-chat", {
-      body: {
-        model: "google/gemini-2.5-flash",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt }
-        ],
-        temperature: 0.7,
-        max_tokens: 1536,
-      },
-    });
-
-    if (aiResponse.error) {
-      console.error("AI API Error:", aiResponse.error);
-      throw new Error(`AI API error: ${aiResponse.error.message || "Unknown error"}`);
+    console.log("Calling Google AI for ATS analysis...");
+    
+    const GOOGLE_AI_API_KEY = Deno.env.get("GOOGLE_AI_API_KEY");
+    if (!GOOGLE_AI_API_KEY) {
+      throw new Error("GOOGLE_AI_API_KEY is not configured");
     }
 
-    const analysisContent = aiResponse.data?.choices?.[0]?.message?.content || "";
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_AI_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{
+              text: `${systemPrompt}\n\n${userPrompt}`
+            }]
+          }],
+          generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 1536,
+          },
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.text();
+      console.error("Google AI API Error:", errorData);
+      throw new Error(`Google AI API error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    const analysisContent = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    
+    if (!analysisContent) {
+      throw new Error("No content in AI response");
+    }
 
     console.log("AI Analysis received");
 
