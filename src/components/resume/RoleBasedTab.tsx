@@ -169,6 +169,52 @@ export function RoleBasedTab() {
                 ))}
               </View>
             )}
+
+            {resumeContent.formattedCertifications?.length > 0 && (
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Certifications</Text>
+                {resumeContent.formattedCertifications.map((cert: any, idx: number) => (
+                  <Text key={idx} style={styles.text}>
+                    • {cert.certification_name} - {cert.issuing_organization}
+                  </Text>
+                ))}
+              </View>
+            )}
+
+            {resumeContent.formattedAchievements?.length > 0 && (
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Achievements</Text>
+                {resumeContent.formattedAchievements.map((achievement: any, idx: number) => (
+                  <Text key={idx} style={styles.text}>
+                    • {achievement.title}
+                  </Text>
+                ))}
+              </View>
+            )}
+
+            {resumeContent.formattedExtracurricular?.length > 0 && (
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Extracurricular Activities</Text>
+                {resumeContent.formattedExtracurricular.map((activity: any, idx: number) => (
+                  <View key={idx} style={styles.item}>
+                    <Text style={styles.itemTitle}>
+                      {activity.activity_organization}
+                      {activity.role && ` - ${activity.role}`}
+                    </Text>
+                    {activity.description && <Text style={styles.text}>{activity.description}</Text>}
+                  </View>
+                ))}
+              </View>
+            )}
+
+            {resumeContent.formattedHobbies?.length > 0 && (
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Hobbies & Interests</Text>
+                <Text style={styles.text}>
+                  {resumeContent.formattedHobbies.map((hobby: any) => hobby.hobby_name || hobby.name).join(' • ')}
+                </Text>
+              </View>
+            )}
           </Page>
         </Document>
       );

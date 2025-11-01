@@ -304,13 +304,24 @@ export function BuildTab() {
                 {resumeContent.formattedExtracurricular.map((extra: any, idx: number) => (
                   <View key={idx} style={styles.subsection}>
                     <Text style={styles.title}>
-                      {extra.activity_name}{extra.role && ` - ${extra.role}`}
+                      {extra.activity_organization || extra.activity_name}
+                      {extra.role && ` - ${extra.role}`}
                     </Text>
                     {extra.description && (
                       <Text style={styles.text}>{extra.description}</Text>
                     )}
                   </View>
                 ))}
+              </View>
+            )}
+
+            {/* Hobbies */}
+            {resumeContent.formattedHobbies?.length > 0 && (
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>HOBBIES & INTERESTS</Text>
+                <Text style={styles.text}>
+                  {resumeContent.formattedHobbies.map((hobby: any) => hobby.hobby_name || hobby.name).join(' • ')}
+                </Text>
               </View>
             )}
           </Page>

@@ -196,6 +196,74 @@ export function ResumePreviewDialog({
               </div>
             )}
 
+          {/* Certifications */}
+          {resumeContent.formattedCertifications &&
+            resumeContent.formattedCertifications.length > 0 && (
+              <div>
+                <h2 className="text-xl font-semibold border-b pb-2 mb-3">Certifications</h2>
+                <ul className="space-y-2">
+                  {resumeContent.formattedCertifications.map((cert: any, idx: number) => (
+                    <li key={idx} className="text-sm text-muted-foreground">
+                      • {cert.certification_name} - {cert.issuing_organization}
+                      {cert.date_issued && <span> ({cert.date_issued})</span>}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+          {/* Achievements */}
+          {resumeContent.formattedAchievements &&
+            resumeContent.formattedAchievements.length > 0 && (
+              <div>
+                <h2 className="text-xl font-semibold border-b pb-2 mb-3">Achievements</h2>
+                <ul className="space-y-2">
+                  {resumeContent.formattedAchievements.map((achievement: any, idx: number) => (
+                    <li key={idx} className="text-sm text-muted-foreground">
+                      • {achievement.title}
+                      {achievement.description && `: ${achievement.description}`}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+          {/* Extracurricular */}
+          {resumeContent.formattedExtracurricular &&
+            resumeContent.formattedExtracurricular.length > 0 && (
+              <div>
+                <h2 className="text-xl font-semibold border-b pb-2 mb-3">Extracurricular Activities</h2>
+                <div className="space-y-3">
+                  {resumeContent.formattedExtracurricular.map((activity: any, idx: number) => (
+                    <div key={idx} className="text-sm">
+                      <h3 className="font-semibold">
+                        {activity.activity_organization}
+                        {activity.role && ` - ${activity.role}`}
+                      </h3>
+                      {activity.description && (
+                        <p className="text-muted-foreground mt-1">{activity.description}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+          {/* Hobbies */}
+          {resumeContent.formattedHobbies &&
+            resumeContent.formattedHobbies.length > 0 && (
+              <div>
+                <h2 className="text-xl font-semibold border-b pb-2 mb-3">Hobbies & Interests</h2>
+                <div className="flex flex-wrap gap-2">
+                  {resumeContent.formattedHobbies.map((hobby: any, idx: number) => (
+                    <span key={idx} className="text-sm px-3 py-1 bg-muted rounded-full">
+                      {hobby.hobby_name || hobby.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
         </div>
 
         <div className="flex justify-end gap-2 mt-6 pt-4 border-t">
