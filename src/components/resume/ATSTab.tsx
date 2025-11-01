@@ -55,53 +55,55 @@ export function ATSTab() {
       if (file.type === 'text/plain') {
         resumeText = await file.text();
       } else {
-        // Get current user ID
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-          toast.error("Please log in to upload files");
-          setIsAnalyzing(false);
-          return;
-        }
-
-        // For PDF and DOC files, upload to storage with user folder structure
-        const fileName = `${user.id}/resume-${Date.now()}-${file.name}`;
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('resumes')
-          .upload(fileName, file);
-
-        if (uploadError) {
-          // If bucket doesn't exist, show helpful message
-          if (uploadError.message.includes('not found')) {
-            toast.error("Storage not configured. Please use the text area to paste your resume.");
+        try {
+          if (file.type === 'application/pdf') {
+            toast.info("Extracting text from PDF...");
+            const arrayBuffer = await file.arrayBuffer();
+            // Dynamic import to keep bundle light
+            const pdfjs: any = await import('pdfjs-dist');
+            const workerSrc = (await import('pdfjs-dist/build/pdf.worker.min.mjs?url')).default as string;
+            pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
+            const loadingTask = pdfjs.getDocument({ data: arrayBuffer });
+            const pdf = await loadingTask.promise;
+            let extracted = '';
+            for (let i = 1; i <= pdf.numPages; i++) {
+              const page = await pdf.getPage(i);
+              const content = await page.getTextContent();
+              const strings = (content.items as any[]).map((it: any) => it.str ?? '').join(' ');
+              extracted += strings + '\n';
+            }
+            resumeText = extracted;
+          } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+            toast.info("Extracting text from DOCX...");
+            const { default: mammoth }: any = await import('mammoth/mammoth.browser');
+            const arrayBuffer = await file.arrayBuffer();
+            const { value } = await mammoth.extractRawText({ arrayBuffer });
+            resumeText = value || '';
+          } else if (file.type === 'application/msword') {
+            toast.error("Legacy .doc files are not supported. Please convert to DOCX or PDF.");
+            setIsAnalyzing(false);
+            return;
+          } else {
+            toast.error("Unsupported file format.");
             setIsAnalyzing(false);
             return;
           }
-          throw uploadError;
-        }
-
-        // Extract text from the uploaded document
-        toast.info("Extracting text from document...");
-        
-        const { data: parseData, error: parseError } = await supabase.functions.invoke('parse-document', {
-          body: { 
-            filePath: fileName,
-            bucket: 'resumes'
-          }
-        });
-
-        if (parseError || !parseData?.success) {
-          toast.error(parseData?.error || "Failed to extract text from document");
-          // Clean up uploaded file
-          await supabase.storage.from('resumes').remove([fileName]);
+        } catch (ex) {
+          console.error("Client-side extraction failed:", ex);
+          toast.error("Text could not be extracted from the document.");
           setIsAnalyzing(false);
           return;
         }
-
-        resumeText = parseData.text;
+        if (!resumeText.trim()) {
+          toast.error("Text could not be extracted from the document.");
+          setIsAnalyzing(false);
+          return;
+        }
         toast.success("Document text extracted successfully!");
-        
-        // Note: File is cleaned up by the parse-document function
       }
+
+      // Reflect extracted text in the textarea
+      setResumeText(resumeText);
 
       // Call analyze-ats function
       const { data, error } = await supabase.functions.invoke('analyze-ats', {
