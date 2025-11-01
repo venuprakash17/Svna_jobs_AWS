@@ -256,12 +256,21 @@ export function BuildTab() {
                     {project.description && (
                       <Text style={styles.text}>{project.description}</Text>
                     )}
-                    {project.technologies_used && (
+                    {project.technologies_used && project.technologies_used.length > 0 && (
                       <Text style={styles.subtitle}>
                         Technologies: {Array.isArray(project.technologies_used) 
                           ? project.technologies_used.join(', ') 
                           : project.technologies_used}
                       </Text>
+                    )}
+                    {project.contributions && project.contributions.length > 0 && (
+                      <View style={{ marginTop: 4 }}>
+                        {project.contributions.map((contribution: string, cIdx: number) => (
+                          <Text key={cIdx} style={styles.bullet}>
+                            • {contribution}
+                          </Text>
+                        ))}
+                      </View>
                     )}
                     {project.duration_start && project.duration_end && (
                       <Text style={styles.date}>

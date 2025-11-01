@@ -71,25 +71,68 @@ serve(async (req) => {
     // Use Lovable AI to enhance and format resume content
     const systemPrompt = `You are an expert resume writer and ATS optimization specialist. 
 Your task is to create an ATS-friendly resume in a structured format that can be easily converted to PDF.
+
+CRITICAL INSTRUCTIONS FOR PROJECTS:
+1. For EVERY project, generate a professional, detailed description even if the student didn't provide one
+2. Based on the project title and technologies, infer the likely features and create 3-5 compelling bullet points
+3. Use strong action verbs (Developed, Implemented, Architected, Optimized, Engineered, Built)
+4. Add quantifiable metrics where logical (e.g., "Improved performance by 40%", "Reduced load time by 2 seconds")
+5. Highlight technical skills and technologies used
+6. Make the description sound professional and impressive while remaining truthful to the project scope
+7. If technologies are missing, infer them based on the project title and common tech stacks
+8. Format each project with:
+   - project_title: Keep original
+   - description: 2-3 sentence compelling overview
+   - technologies_used: Array of relevant technologies (infer if not provided)
+   - contributions: Array of 3-5 bullet points describing what was built/achieved
+   - duration_start and duration_end: Keep original
+   - github_demo_link: Keep original
+
 Focus on:
 - Clear, concise bullet points with action verbs
 - Quantifiable achievements
 - Keywords relevant to ${targetRole || "the student's field"}
 - Professional formatting
 - ATS-compatible structure
+- Making projects sound impressive and professional
 
 Return ONLY a valid JSON object with the following structure:
 {
   "summary": "Professional summary paragraph",
   "formattedEducation": [enhanced education entries],
-  "formattedProjects": [enhanced project descriptions with bullet points],
+  "formattedProjects": [
+    {
+      "project_title": "original title",
+      "description": "compelling 2-3 sentence overview",
+      "technologies_used": ["tech1", "tech2", ...],
+      "contributions": ["bullet point 1", "bullet point 2", ...],
+      "duration_start": "original date",
+      "duration_end": "original date",
+      "github_demo_link": "original link"
+    }
+  ],
   "formattedSkills": {organized skills by category},
   "formattedCertifications": [formatted certifications],
   "formattedAchievements": [formatted achievements],
   "formattedExtracurricular": [formatted activities],
-  "formattedHobbies": [formatted hobbies - only include if provided],
+  "formattedHobbies": [formatted hobbies as strings - only include if provided],
   "atsScore": estimated ATS score (0-100),
   "recommendations": [list of improvement suggestions]
+}
+
+EXAMPLE PROJECT ENHANCEMENT:
+Input: { "project_title": "AI Resume Builder", "description": "", "technologies_used": [] }
+Output: {
+  "project_title": "AI Resume Builder",
+  "description": "Developed an intelligent resume builder application leveraging AI to optimize resumes for ATS systems. Implemented real-time content enhancement and automated formatting features.",
+  "technologies_used": ["React", "Node.js", "TypeScript", "OpenAI API", "Tailwind CSS"],
+  "contributions": [
+    "Architected and developed a full-stack web application with React frontend and Node.js backend",
+    "Integrated OpenAI API to provide AI-powered resume optimization and content suggestions",
+    "Implemented ATS scoring algorithm that analyzes resumes against industry standards",
+    "Built responsive UI with Tailwind CSS ensuring seamless experience across all devices",
+    "Deployed application handling 100+ concurrent users with 99.9% uptime"
+  ]
 }`;
 
     const userPrompt = `Create an ATS-optimized resume ${targetRole ? `tailored for ${targetRole} role` : ""} using this data:\n\n${JSON.stringify(resumeData, null, 2)}`;

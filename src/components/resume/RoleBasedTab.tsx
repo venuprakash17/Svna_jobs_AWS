@@ -152,18 +152,29 @@ export function RoleBasedTab() {
                   <View key={idx} style={styles.item}>
                     <View style={styles.itemHeader}>
                       <Text style={styles.itemTitle}>{project.project_title}</Text>
-                      <Text style={styles.itemDate}>
-                        {project.duration_start} - {project.duration_end}
-                      </Text>
+                      {(project.duration_start || project.duration_end) && (
+                        <Text style={styles.itemDate}>
+                          {project.duration_start} - {project.duration_end}
+                        </Text>
+                      )}
                     </View>
                     {project.description && <Text style={styles.text}>{project.description}</Text>}
-                    {project.technologies_used && (
+                    {project.technologies_used && project.technologies_used.length > 0 && (
                       <Text style={styles.text}>
                         <Text style={{ fontWeight: "bold" }}>Technologies: </Text>
                         {Array.isArray(project.technologies_used)
                           ? project.technologies_used.join(", ")
                           : project.technologies_used}
                       </Text>
+                    )}
+                    {project.contributions && project.contributions.length > 0 && (
+                      <View style={{ marginTop: 4 }}>
+                        {project.contributions.map((contribution: string, cIdx: number) => (
+                          <Text key={cIdx} style={[styles.text, { marginLeft: 10 }]}>
+                            • {contribution}
+                          </Text>
+                        ))}
+                      </View>
                     )}
                   </View>
                 ))}
@@ -211,7 +222,10 @@ export function RoleBasedTab() {
               <View style={styles.section}>
                 <Text style={styles.sectionTitle}>Hobbies & Interests</Text>
                 <Text style={styles.text}>
-                  {resumeContent.formattedHobbies.map((hobby: any) => hobby.hobby_name || hobby.name).join(' • ')}
+                  {resumeContent.formattedHobbies
+                    .map((hobby: any) => typeof hobby === 'string' ? hobby : (hobby.hobby_name || hobby.name || hobby.title || ''))
+                    .filter((s: string) => s && s.trim())
+                    .join(' • ')}
                 </Text>
               </View>
             )}

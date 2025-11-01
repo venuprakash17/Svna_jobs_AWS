@@ -163,38 +163,49 @@ export function ResumePreviewDialog({
             </div>
           )}
 
-          {/* Projects */}
-          {resumeContent.formattedProjects &&
-            resumeContent.formattedProjects.length > 0 && (
-              <div>
-                <h2 className="text-xl font-semibold border-b pb-2 mb-3">Projects</h2>
-                <div className="space-y-4">
-                  {resumeContent.formattedProjects.map((project: any, idx: number) => (
-                    <div key={idx} className="text-sm">
-                      <div className="flex justify-between items-start">
-                        <h3 className="font-semibold">{project.project_title}</h3>
-                        <span className="text-muted-foreground text-xs">
-                          {project.duration_start} - {project.duration_end}
-                        </span>
-                      </div>
-                      {project.description && (
-                        <p className="text-muted-foreground mt-1">
-                          {project.description}
-                        </p>
-                      )}
-                      {project.technologies_used && (
-                        <p className="text-xs mt-1">
-                          <span className="font-medium">Technologies: </span>
-                          {Array.isArray(project.technologies_used)
-                            ? project.technologies_used.join(", ")
-                            : project.technologies_used}
-                        </p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+           {/* Projects */}
+           {resumeContent.formattedProjects &&
+             resumeContent.formattedProjects.length > 0 && (
+               <div>
+                 <h2 className="text-xl font-semibold border-b pb-2 mb-3">Projects</h2>
+                 <div className="space-y-4">
+                   {resumeContent.formattedProjects.map((project: any, idx: number) => (
+                     <div key={idx} className="text-sm">
+                       <div className="flex justify-between items-start">
+                         <h3 className="font-semibold">{project.project_title}</h3>
+                         {(project.duration_start || project.duration_end) && (
+                           <span className="text-muted-foreground text-xs">
+                             {project.duration_start} - {project.duration_end}
+                           </span>
+                         )}
+                       </div>
+                       {project.description && (
+                         <p className="text-muted-foreground mt-1">
+                           {project.description}
+                         </p>
+                       )}
+                       {project.technologies_used && project.technologies_used.length > 0 && (
+                         <p className="text-xs mt-1">
+                           <span className="font-medium">Technologies: </span>
+                           {Array.isArray(project.technologies_used)
+                             ? project.technologies_used.join(", ")
+                             : project.technologies_used}
+                         </p>
+                       )}
+                       {project.contributions && project.contributions.length > 0 && (
+                         <ul className="text-xs mt-2 space-y-1">
+                           {project.contributions.map((contribution: string, cIdx: number) => (
+                             <li key={cIdx} className="text-muted-foreground ml-4">
+                               • {contribution}
+                             </li>
+                           ))}
+                         </ul>
+                       )}
+                     </div>
+                   ))}
+                 </div>
+               </div>
+             )}
 
           {/* Certifications */}
           {resumeContent.formattedCertifications &&
