@@ -30,10 +30,17 @@ export function EducationForm({ education }: EducationFormProps) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
+      // Convert YYYY-MM to YYYY-MM-01 for date fields
+      const formattedData = {
+        ...data,
+        start_date: data.start_date ? `${data.start_date}-01` : null,
+        end_date: data.end_date && !data.is_current ? `${data.end_date}-01` : null,
+      };
+
       if (editingId) {
         const { error } = await supabase
           .from("student_education")
-          .update(data)
+          .update(formattedData)
           .eq("id", editingId)
           .eq("user_id", user.id);
 
@@ -45,7 +52,7 @@ export function EducationForm({ education }: EducationFormProps) {
           .from("student_education")
           .insert({
             user_id: user.id,
-            ...data,
+            ...formattedData,
             display_order: education.length,
           });
 
