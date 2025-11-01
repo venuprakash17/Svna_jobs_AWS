@@ -12,6 +12,7 @@ import { resumeAnalytics } from "@/lib/mockData";
 import { toast } from "sonner";
 import { BuildTab } from "@/components/resume/BuildTab";
 import { ATSTab } from "@/components/resume/ATSTab";
+import { RoleBasedTab } from "@/components/resume/RoleBasedTab";
 
 export default function Resume() {
   const [activeTab, setActiveTab] = useState("build");
@@ -97,28 +98,7 @@ export default function Resume() {
 
         {/* Role-Based Resume */}
         <TabsContent value="role" className="space-y-4">
-          <Card className="shadow-card">
-            <CardHeader>
-              <CardTitle>Generate Role-Specific Resume</CardTitle>
-              <CardDescription>Tailor your resume for specific job roles</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label>Target Role</Label>
-                <Input placeholder="e.g., Software Engineer, Data Scientist" />
-              </div>
-              <div className="space-y-2">
-                <Label>Job Description (Optional)</Label>
-                <Textarea 
-                  placeholder="Paste the job description to optimize your resume..."
-                  rows={6}
-                />
-              </div>
-              <Button className="w-full bg-gradient-primary" onClick={() => handleGenerate('Role-specific Resume')}>
-                Generate Tailored Resume
-              </Button>
-            </CardContent>
-          </Card>
+          <RoleBasedTab />
         </TabsContent>
 
         {/* Cover Letter */}
