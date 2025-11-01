@@ -90,41 +90,43 @@ Return ONLY a valid JSON object with the following structure:
 
     const userPrompt = `Create an ATS-optimized resume ${targetRole ? `tailored for ${targetRole} role` : ""} using this data:\n\n${JSON.stringify(resumeData, null, 2)}`;
 
-    console.log("Calling Google AI for resume generation...");
-    
-    const GOOGLE_AI_API_KEY = Deno.env.get("GOOGLE_AI_API_KEY");
-    if (!GOOGLE_AI_API_KEY) {
-      throw new Error("GOOGLE_AI_API_KEY is not configured");
+    console.log("Calling Lovable AI for resume generation...");
+
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    if (!LOVABLE_API_KEY) {
+      throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GOOGLE_AI_API_KEY}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{
-              text: `${systemPrompt}\n\n${userPrompt}`
-            }]
-          }],
-          generationConfig: {
-            temperature: 0.7,
-            maxOutputTokens: 2048,
-          },
-        }),
-      }
-    );
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt }
+        ],
+      }),
+    });
 
     if (!response.ok) {
-      const errorData = await response.text();
-      console.error("Google AI API Error:", errorData);
-      throw new Error(`Google AI API error: ${response.statusText}`);
+      const text = await response.text();
+      console.error("AI gateway error:", response.status, text);
+      if (response.status === 429) {
+        throw new Error("Rate limits exceeded, please try again later.");
+      }
+      if (response.status === 402) {
+        throw new Error("Payment required, please add credits to Lovable AI workspace.");
+      }
+      throw new Error("AI gateway error");
     }
 
     const data = await response.json();
-    const enhancedContent = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
-    
+    const enhancedContent = data.choices?.[0]?.message?.content || "";
+
     if (!enhancedContent) {
       throw new Error("No content in AI response");
     }
