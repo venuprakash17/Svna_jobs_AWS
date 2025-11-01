@@ -34,9 +34,12 @@ export function ProjectsForm({ projects }: ProjectsFormProps) {
         .map(t => t.trim())
         .filter(Boolean);
 
+      // Convert YYYY-MM to YYYY-MM-01 for date fields
       const projectData = {
         ...data,
         technologies_used: technologies,
+        duration_start: data.duration_start ? `${data.duration_start}-01` : null,
+        duration_end: data.duration_end ? `${data.duration_end}-01` : null,
       };
 
       if (editingId) {
@@ -79,6 +82,8 @@ export function ProjectsForm({ projects }: ProjectsFormProps) {
     reset({
       ...project,
       technologies_used: project.technologies_used?.join(", ") as any,
+      duration_start: project.duration_start ? project.duration_start.substring(0, 7) : undefined,
+      duration_end: project.duration_end ? project.duration_end.substring(0, 7) : undefined,
     });
     setIsAdding(true);
   };

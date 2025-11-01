@@ -28,10 +28,16 @@ export function AchievementsForm({ achievements }: AchievementsFormProps) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
+      // Convert YYYY-MM to YYYY-MM-01 for date field
+      const achievementData = {
+        ...data,
+        achievement_date: data.achievement_date ? `${data.achievement_date}-01` : null,
+      };
+
       if (editingId) {
         const { error } = await supabase
           .from("student_achievements")
-          .update(data)
+          .update(achievementData)
           .eq("id", editingId)
           .eq("user_id", user.id);
 
@@ -43,7 +49,7 @@ export function AchievementsForm({ achievements }: AchievementsFormProps) {
           .from("student_achievements")
           .insert({
             user_id: user.id,
-            ...data,
+            ...achievementData,
             display_order: achievements.length,
           });
 
@@ -65,7 +71,10 @@ export function AchievementsForm({ achievements }: AchievementsFormProps) {
 
   const handleEdit = (achievement: Achievement) => {
     setEditingId(achievement.id!);
-    reset(achievement);
+    reset({
+      ...achievement,
+      achievement_date: achievement.achievement_date ? achievement.achievement_date.substring(0, 7) : undefined,
+    });
     setIsAdding(true);
   };
 

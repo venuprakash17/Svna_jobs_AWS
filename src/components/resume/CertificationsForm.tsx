@@ -27,10 +27,16 @@ export function CertificationsForm({ certifications }: CertificationsFormProps) 
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
+      // Convert YYYY-MM to YYYY-MM-01 for date field
+      const certData = {
+        ...data,
+        date_issued: data.date_issued ? `${data.date_issued}-01` : null,
+      };
+
       if (editingId) {
         const { error } = await supabase
           .from("student_certifications")
-          .update(data)
+          .update(certData)
           .eq("id", editingId)
           .eq("user_id", user.id);
 
@@ -42,7 +48,7 @@ export function CertificationsForm({ certifications }: CertificationsFormProps) 
           .from("student_certifications")
           .insert({
             user_id: user.id,
-            ...data,
+            ...certData,
             display_order: certifications.length,
           });
 
@@ -64,7 +70,10 @@ export function CertificationsForm({ certifications }: CertificationsFormProps) 
 
   const handleEdit = (cert: Certification) => {
     setEditingId(cert.id!);
-    reset(cert);
+    reset({
+      ...cert,
+      date_issued: cert.date_issued ? cert.date_issued.substring(0, 7) : undefined,
+    });
     setIsAdding(true);
   };
 

@@ -28,10 +28,17 @@ export function ExtracurricularForm({ extracurricular }: ExtracurricularFormProp
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
+      // Convert YYYY-MM to YYYY-MM-01 for date fields
+      const activityData = {
+        ...data,
+        duration_start: data.duration_start ? `${data.duration_start}-01` : null,
+        duration_end: data.duration_end ? `${data.duration_end}-01` : null,
+      };
+
       if (editingId) {
         const { error } = await supabase
           .from("student_extracurricular")
-          .update(data)
+          .update(activityData)
           .eq("id", editingId)
           .eq("user_id", user.id);
 
@@ -43,7 +50,7 @@ export function ExtracurricularForm({ extracurricular }: ExtracurricularFormProp
           .from("student_extracurricular")
           .insert({
             user_id: user.id,
-            ...data,
+            ...activityData,
             display_order: extracurricular.length,
           });
 
@@ -65,7 +72,11 @@ export function ExtracurricularForm({ extracurricular }: ExtracurricularFormProp
 
   const handleEdit = (activity: Extracurricular) => {
     setEditingId(activity.id!);
-    reset(activity);
+    reset({
+      ...activity,
+      duration_start: activity.duration_start ? activity.duration_start.substring(0, 7) : undefined,
+      duration_end: activity.duration_end ? activity.duration_end.substring(0, 7) : undefined,
+    });
     setIsAdding(true);
   };
 
