@@ -33,6 +33,7 @@ export function BuildTab() {
     certifications,
     achievements,
     extracurricular,
+    hobbies,
     isLoading,
     saveProfile,
   } = useStudentProfile();
@@ -424,7 +425,7 @@ export function BuildTab() {
       <ExtracurricularForm extracurricular={extracurricular} />
 
       {/* Hobbies */}
-      <HobbiesForm />
+      <HobbiesForm hobbies={hobbies} />
 
       {/* Generate Resume Button */}
       {completeness === 100 && (
