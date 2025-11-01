@@ -14,3 +14,6 @@ verify_jwt = true
 
 [functions.generate-cover-letter]
 verify_jwt = true
+
+[functions.parse-document]
+verify_jwt = true

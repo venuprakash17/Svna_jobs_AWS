@@ -79,23 +79,28 @@ export function ATSTab() {
           throw uploadError;
         }
 
-        // Get public URL
-        const { data: { publicUrl } } = supabase.storage
-          .from('resumes')
-          .getPublicUrl(fileName);
-
-        // For PDF/DOC, we need to extract text - for now, show message
+        // Extract text from the uploaded document
         toast.info("Extracting text from document...");
         
-        // Since we don't have a document parser integrated yet, 
-        // ask user to use text area instead
-        toast.error("PDF/DOC parsing not yet available. Please copy your resume text and paste it in the text area below.");
+        const { data: parseData, error: parseError } = await supabase.functions.invoke('parse-document', {
+          body: { 
+            filePath: fileName,
+            bucket: 'resumes'
+          }
+        });
+
+        if (parseError || !parseData?.success) {
+          toast.error(parseData?.error || "Failed to extract text from document");
+          // Clean up uploaded file
+          await supabase.storage.from('resumes').remove([fileName]);
+          setIsAnalyzing(false);
+          return;
+        }
+
+        resumeText = parseData.text;
+        toast.success("Document text extracted successfully!");
         
-        // Clean up uploaded file
-        await supabase.storage.from('resumes').remove([fileName]);
-        
-        setIsAnalyzing(false);
-        return;
+        // Note: File is cleaned up by the parse-document function
       }
 
       // Call analyze-ats function
