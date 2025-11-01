@@ -5,6 +5,7 @@ import { SkillsForm } from "./SkillsForm";
 import { CertificationsForm } from "./CertificationsForm";
 import { AchievementsForm } from "./AchievementsForm";
 import { ExtracurricularForm } from "./ExtracurricularForm";
+import { HobbiesForm } from "./HobbiesForm";
 import { ResumePreviewDialog } from "./ResumePreviewDialog";
 import { useStudentProfile } from "@/hooks/useStudentProfile";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -377,7 +378,7 @@ export function BuildTab() {
         <AlertDescription>
           Fill in the required sections below to create your resume profile. You can edit any section at any time.
           <strong className="block mt-2">Required:</strong> Personal Info, Education, Projects, Skills
-          <strong className="block mt-1">Optional:</strong> Certifications, Achievements, Extracurricular
+          <strong className="block mt-1">Optional:</strong> Certifications, Achievements, Extracurricular, Hobbies
           {completeness < 100 && (
             <strong className="block mt-2 text-primary">
               Complete required sections ({completeness}% done) to unlock the "Generate Resume PDF" button.
@@ -410,6 +411,9 @@ export function BuildTab() {
 
       {/* Extracurricular */}
       <ExtracurricularForm extracurricular={extracurricular} />
+
+      {/* Hobbies */}
+      <HobbiesForm />
 
       {/* Generate Resume Button */}
       {completeness === 100 && (

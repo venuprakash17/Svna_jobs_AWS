@@ -72,6 +72,13 @@ export interface Extracurricular {
   display_order?: number;
 }
 
+export interface Hobby {
+  id?: string;
+  hobby_name: string;
+  description?: string;
+  display_order?: number;
+}
+
 export function useStudentProfile() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -201,6 +208,24 @@ export function useStudentProfile() {
     },
   });
 
+  // Fetch hobbies
+  const { data: hobbies = [], isLoading: hobbiesLoading } = useQuery({
+    queryKey: ["studentHobbies"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      const { data, error } = await supabase
+        .from("hobbies")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("display_order");
+
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
   // Save profile mutation
   const saveProfile = useMutation({
     mutationFn: async (profileData: StudentProfile) => {
@@ -234,7 +259,7 @@ export function useStudentProfile() {
 
   const isLoading = profileLoading || educationLoading || projectsLoading || 
                     skillsLoading || certificationsLoading || achievementsLoading || 
-                    extracurricularLoading;
+                    extracurricularLoading || hobbiesLoading;
 
   return {
     profile,
@@ -244,6 +269,7 @@ export function useStudentProfile() {
     certifications,
     achievements,
     extracurricular,
+    hobbies,
     isLoading,
     saveProfile,
   };

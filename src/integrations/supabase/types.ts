@@ -268,6 +268,36 @@ export type Database = {
           },
         ]
       }
+      hobbies: {
+        Row: {
+          created_at: string
+          description: string | null
+          display_order: number | null
+          hobby_name: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          hobby_name: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          hobby_name?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           college_id: string | null

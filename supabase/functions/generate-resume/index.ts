@@ -31,7 +31,7 @@ serve(async (req) => {
     const { targetRole } = await req.json();
 
     // Fetch all student data
-    const [profileRes, educationRes, projectsRes, skillsRes, certificationsRes, achievementsRes, extracurricularRes] = await Promise.all([
+    const [profileRes, educationRes, projectsRes, skillsRes, certificationsRes, achievementsRes, extracurricularRes, hobbiesRes] = await Promise.all([
       supabase.from("student_profiles").select("*").eq("user_id", user.id).maybeSingle(),
       supabase.from("student_education").select("*").eq("user_id", user.id).order("display_order"),
       supabase.from("student_projects").select("*").eq("user_id", user.id).order("display_order"),
@@ -39,6 +39,7 @@ serve(async (req) => {
       supabase.from("student_certifications").select("*").eq("user_id", user.id).order("display_order"),
       supabase.from("student_achievements").select("*").eq("user_id", user.id).order("display_order"),
       supabase.from("student_extracurricular").select("*").eq("user_id", user.id).order("display_order"),
+      supabase.from("hobbies").select("*").eq("user_id", user.id).order("display_order"),
     ]);
 
     if (profileRes.error) throw profileRes.error;
@@ -53,6 +54,7 @@ serve(async (req) => {
     const certifications = certificationsRes.data || [];
     const achievements = achievementsRes.data || [];
     const extracurricular = extracurricularRes.data || [];
+    const hobbies = hobbiesRes.data || [];
 
     // Prepare data for AI
     const resumeData = {
@@ -63,6 +65,7 @@ serve(async (req) => {
       certifications,
       achievements,
       extracurricular,
+      hobbies,
     };
 
     // Use Lovable AI to enhance and format resume content
@@ -84,6 +87,7 @@ Return ONLY a valid JSON object with the following structure:
   "formattedCertifications": [formatted certifications],
   "formattedAchievements": [formatted achievements],
   "formattedExtracurricular": [formatted activities],
+  "formattedHobbies": [formatted hobbies - only include if provided],
   "atsScore": estimated ATS score (0-100),
   "recommendations": [list of improvement suggestions]
 }`;
@@ -152,6 +156,7 @@ Return ONLY a valid JSON object with the following structure:
         formattedCertifications: certifications,
         formattedAchievements: achievements,
         formattedExtracurricular: extracurricular,
+        formattedHobbies: hobbies,
         atsScore: 75,
         recommendations: ["Complete profile review recommended"],
       };
