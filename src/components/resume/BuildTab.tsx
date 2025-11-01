@@ -199,22 +199,31 @@ export function BuildTab() {
             {resumeContent.formattedEducation?.length > 0 && (
               <View style={styles.section}>
                 <Text style={styles.sectionTitle}>EDUCATION</Text>
-                {resumeContent.formattedEducation.map((edu: any, idx: number) => (
-                  <View key={idx} style={styles.subsection}>
-                    <Text style={styles.title}>
-                      {edu.degree || edu.institution_name}
-                    </Text>
-                    <Text style={styles.subtitle}>
-                      {edu.institution_name || edu.field_of_study}
-                    </Text>
-                    <Text style={styles.date}>
-                      {edu.start_date} - {edu.is_current ? 'Present' : edu.end_date}
-                    </Text>
-                    {edu.cgpa_percentage && (
-                      <Text style={styles.text}>CGPA: {edu.cgpa_percentage}</Text>
-                    )}
-                  </View>
-                ))}
+                {resumeContent.formattedEducation.map((edu: any, idx: number) => {
+                  const institution = edu.institution_name || edu.institution || edu.school || edu.university || edu.college;
+                  const degree = edu.degree || edu.degree_title || edu.title;
+                  const field = edu.field_of_study || edu.major || edu.specialization;
+                  const start = edu.start_date || edu.start || edu.startDate;
+                  const endRaw = edu.end_date || edu.end || edu.endDate;
+                  const isCurrent = (edu.is_current ?? edu.current) ?? (typeof endRaw === 'string' && /present/i.test(endRaw));
+                  const end = isCurrent ? 'Present' : endRaw;
+                  const cgpa = edu.cgpa_percentage || edu.cgpa || edu.gpa || edu.score;
+
+                  return (
+                    <View key={idx} style={styles.subsection}>
+                      <Text style={styles.title}>{degree || institution}</Text>
+                      {(institution || field) && (
+                        <Text style={styles.subtitle}>{institution || field}</Text>
+                      )}
+                      {(start || end) && (
+                        <Text style={styles.date}>{start} - {end}</Text>
+                      )}
+                      {cgpa && (
+                        <Text style={styles.text}>CGPA: {cgpa}</Text>
+                      )}
+                    </View>
+                  );
+                })}
               </View>
             )}
 

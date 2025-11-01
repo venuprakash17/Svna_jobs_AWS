@@ -104,28 +104,42 @@ export function ResumePreviewDialog({
               <div>
                 <h2 className="text-xl font-semibold border-b pb-2 mb-3">Education</h2>
                 <div className="space-y-3">
-                  {resumeContent.formattedEducation.map((edu: any, idx: number) => (
-                    <div key={idx} className="text-sm">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <h3 className="font-semibold">
-                            {edu.degree || edu.institution_name}
-                          </h3>
-                          <p className="text-muted-foreground">
-                            {edu.institution_name || edu.field_of_study}
-                          </p>
+                  {resumeContent.formattedEducation.map((edu: any, idx: number) => {
+                    const institution = edu.institution_name || edu.institution || edu.school || edu.university || edu.college;
+                    const degree = edu.degree || edu.degree_title || edu.title;
+                    const field = edu.field_of_study || edu.major || edu.specialization;
+                    const start = edu.start_date || edu.start || edu.startDate;
+                    const endRaw = edu.end_date || edu.end || edu.endDate;
+                    const isCurrent = (edu.is_current ?? edu.current) ?? (typeof endRaw === 'string' && /present/i.test(endRaw));
+                    const end = isCurrent ? 'Present' : endRaw;
+                    const cgpa = edu.cgpa_percentage || edu.cgpa || edu.gpa || edu.score;
+                    return (
+                      <div key={idx} className="text-sm">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <h3 className="font-semibold">
+                              {degree || institution}
+                            </h3>
+                            {(institution || field) && (
+                              <p className="text-muted-foreground">
+                                {institution || field}
+                              </p>
+                            )}
+                          </div>
+                          {(start || end) && (
+                            <span className="text-muted-foreground text-xs">
+                              {start} - {end}
+                            </span>
+                          )}
                         </div>
-                        <span className="text-muted-foreground text-xs">
-                          {edu.start_date} - {edu.is_current ? "Present" : edu.end_date}
-                        </span>
+                        {cgpa && (
+                          <p className="text-muted-foreground mt-1">
+                            CGPA: {cgpa}
+                          </p>
+                        )}
                       </div>
-                      {edu.cgpa_percentage && (
-                        <p className="text-muted-foreground mt-1">
-                          CGPA: {edu.cgpa_percentage}
-                        </p>
-                      )}
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             )}
