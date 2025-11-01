@@ -15,6 +15,8 @@ import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
+import { pdf } from "@react-pdf/renderer";
+import { Document, Page, Text, View, StyleSheet, Link } from "@react-pdf/renderer";
 
 export function BuildTab() {
   const { toast } = useToast();
@@ -93,59 +95,220 @@ export function BuildTab() {
     if (!resumeContent || !profile) return;
     
     try {
-      // Create a clean resume text without recommendations
-      const resumeText = `
-${profile.full_name}
-${profile.email} | ${profile.phone_number}
-${profile.linkedin_profile ? `LinkedIn: ${profile.linkedin_profile}` : ''}
-${profile.github_portfolio ? `GitHub: ${profile.github_portfolio}` : ''}
+      // PDF styles
+      const styles = StyleSheet.create({
+        page: {
+          padding: 40,
+          fontSize: 11,
+          fontFamily: 'Helvetica',
+        },
+        header: {
+          marginBottom: 20,
+          textAlign: 'center',
+          borderBottom: '1pt solid #000',
+          paddingBottom: 10,
+        },
+        name: {
+          fontSize: 24,
+          fontWeight: 'bold',
+          marginBottom: 5,
+        },
+        contact: {
+          fontSize: 9,
+          color: '#555',
+          marginBottom: 2,
+        },
+        section: {
+          marginTop: 15,
+        },
+        sectionTitle: {
+          fontSize: 14,
+          fontWeight: 'bold',
+          borderBottom: '1pt solid #000',
+          paddingBottom: 3,
+          marginBottom: 8,
+        },
+        text: {
+          fontSize: 10,
+          lineHeight: 1.5,
+          marginBottom: 5,
+        },
+        subsection: {
+          marginBottom: 10,
+        },
+        title: {
+          fontSize: 11,
+          fontWeight: 'bold',
+          marginBottom: 2,
+        },
+        subtitle: {
+          fontSize: 10,
+          color: '#555',
+          marginBottom: 2,
+        },
+        date: {
+          fontSize: 9,
+          color: '#666',
+          fontStyle: 'italic',
+        },
+        bullet: {
+          fontSize: 10,
+          marginLeft: 10,
+          marginBottom: 2,
+        },
+        link: {
+          color: '#0066cc',
+          textDecoration: 'none',
+        },
+      });
 
-PROFESSIONAL SUMMARY
-${resumeContent.summary || 'Professional with strong technical skills and experience.'}
+      // Create PDF document
+      const ResumePDF = (
+        <Document>
+          <Page size="A4" style={styles.page}>
+            {/* Header */}
+            <View style={styles.header}>
+              <Text style={styles.name}>{profile.full_name}</Text>
+              <Text style={styles.contact}>
+                {profile.email} | {profile.phone_number}
+              </Text>
+              {(profile.linkedin_profile || profile.github_portfolio) && (
+                <Text style={styles.contact}>
+                  {profile.linkedin_profile && `LinkedIn: ${profile.linkedin_profile}`}
+                  {profile.linkedin_profile && profile.github_portfolio && ' | '}
+                  {profile.github_portfolio && `GitHub: ${profile.github_portfolio}`}
+                </Text>
+              )}
+            </View>
 
-EDUCATION
-${resumeContent.formattedEducation?.map((edu: any) => 
-  `${edu.degree || edu.institution_name || ''}
-${edu.institution_name || edu.field_of_study || ''}
-${edu.start_date} - ${edu.is_current ? 'Present' : edu.end_date || 'Present'}
-${edu.cgpa_percentage ? `CGPA: ${edu.cgpa_percentage}` : ''}`
-).join('\n\n') || ''}
+            {/* Summary */}
+            {resumeContent.summary && (
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>PROFESSIONAL SUMMARY</Text>
+                <Text style={styles.text}>{resumeContent.summary}</Text>
+              </View>
+            )}
 
-SKILLS
-${resumeContent.formattedSkills ? Object.entries(resumeContent.formattedSkills).map(([category, skills]: [string, any]) => 
-  `${category.toUpperCase()}: ${Array.isArray(skills) ? skills.join(', ') : skills}`
-).join('\n') : ''}
+            {/* Education */}
+            {resumeContent.formattedEducation?.length > 0 && (
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>EDUCATION</Text>
+                {resumeContent.formattedEducation.map((edu: any, idx: number) => (
+                  <View key={idx} style={styles.subsection}>
+                    <Text style={styles.title}>
+                      {edu.degree || edu.institution_name}
+                    </Text>
+                    <Text style={styles.subtitle}>
+                      {edu.institution_name || edu.field_of_study}
+                    </Text>
+                    <Text style={styles.date}>
+                      {edu.start_date} - {edu.is_current ? 'Present' : edu.end_date}
+                    </Text>
+                    {edu.cgpa_percentage && (
+                      <Text style={styles.text}>CGPA: {edu.cgpa_percentage}</Text>
+                    )}
+                  </View>
+                ))}
+              </View>
+            )}
 
-PROJECTS
-${resumeContent.formattedProjects?.map((proj: any) => 
-  `${proj.project_title || proj.title}
-${proj.description || ''}
-Technologies: ${Array.isArray(proj.technologies_used) ? proj.technologies_used.join(', ') : proj.technologies_used || ''}
-${proj.duration_start && proj.duration_end ? `Duration: ${proj.duration_start} - ${proj.duration_end}` : ''}`
-).join('\n\n') || ''}
+            {/* Skills */}
+            {resumeContent.formattedSkills && (
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>SKILLS</Text>
+                {Object.entries(resumeContent.formattedSkills).map(
+                  ([category, skills]: [string, any]) => (
+                    <Text key={category} style={styles.text}>
+                      <Text style={{ fontWeight: 'bold' }}>{category.toUpperCase()}: </Text>
+                      {Array.isArray(skills) ? skills.join(', ') : skills}
+                    </Text>
+                  )
+                )}
+              </View>
+            )}
 
-${resumeContent.formattedCertifications?.length ? 
-  `CERTIFICATIONS\n${resumeContent.formattedCertifications.map((cert: any) => 
-    `${cert.certification_name} - ${cert.issuing_organization}${cert.issue_date ? ` (${cert.issue_date})` : ''}`
-  ).join('\n')}` : ''}
+            {/* Projects */}
+            {resumeContent.formattedProjects?.length > 0 && (
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>PROJECTS</Text>
+                {resumeContent.formattedProjects.map((project: any, idx: number) => (
+                  <View key={idx} style={styles.subsection}>
+                    <Text style={styles.title}>
+                      {project.project_title || project.title}
+                    </Text>
+                    {project.description && (
+                      <Text style={styles.text}>{project.description}</Text>
+                    )}
+                    {project.technologies_used && (
+                      <Text style={styles.subtitle}>
+                        Technologies: {Array.isArray(project.technologies_used) 
+                          ? project.technologies_used.join(', ') 
+                          : project.technologies_used}
+                      </Text>
+                    )}
+                    {project.duration_start && project.duration_end && (
+                      <Text style={styles.date}>
+                        {project.duration_start} - {project.duration_end}
+                      </Text>
+                    )}
+                  </View>
+                ))}
+              </View>
+            )}
 
-${resumeContent.formattedAchievements?.length ?
-  `ACHIEVEMENTS\n${resumeContent.formattedAchievements.map((ach: any) => 
-    `• ${ach.achievement_title}: ${ach.description}`
-  ).join('\n')}` : ''}
+            {/* Certifications */}
+            {resumeContent.formattedCertifications?.length > 0 && (
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>CERTIFICATIONS</Text>
+                {resumeContent.formattedCertifications.map((cert: any, idx: number) => (
+                  <Text key={idx} style={styles.bullet}>
+                    • {cert.certification_name} - {cert.issuing_organization}
+                    {cert.issue_date && ` (${cert.issue_date})`}
+                  </Text>
+                ))}
+              </View>
+            )}
 
-${resumeContent.formattedExtracurricular?.length ?
-  `EXTRACURRICULAR ACTIVITIES\n${resumeContent.formattedExtracurricular.map((extra: any) => 
-    `${extra.activity_name}${extra.role ? ` - ${extra.role}` : ''}${extra.description ? `\n${extra.description}` : ''}`
-  ).join('\n\n')}` : ''}
-`.trim();
+            {/* Achievements */}
+            {resumeContent.formattedAchievements?.length > 0 && (
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>ACHIEVEMENTS</Text>
+                {resumeContent.formattedAchievements.map((ach: any, idx: number) => (
+                  <Text key={idx} style={styles.bullet}>
+                    • {ach.achievement_title}: {ach.description}
+                  </Text>
+                ))}
+              </View>
+            )}
 
-      // Create blob and download
-      const blob = new Blob([resumeText], { type: 'text/plain' });
+            {/* Extracurricular */}
+            {resumeContent.formattedExtracurricular?.length > 0 && (
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>EXTRACURRICULAR ACTIVITIES</Text>
+                {resumeContent.formattedExtracurricular.map((extra: any, idx: number) => (
+                  <View key={idx} style={styles.subsection}>
+                    <Text style={styles.title}>
+                      {extra.activity_name}{extra.role && ` - ${extra.role}`}
+                    </Text>
+                    {extra.description && (
+                      <Text style={styles.text}>{extra.description}</Text>
+                    )}
+                  </View>
+                ))}
+              </View>
+            )}
+          </Page>
+        </Document>
+      );
+
+      // Generate PDF blob
+      const blob = await pdf(ResumePDF).toBlob();
+
+      // Download PDF
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${profile.full_name?.replace(/\s+/g, '_')}_Resume.txt`;
+      a.download = `${profile.full_name?.replace(/\s+/g, '_')}_Resume.pdf`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -153,7 +316,7 @@ ${resumeContent.formattedExtracurricular?.length ?
 
       toast({
         title: "Resume Downloaded",
-        description: "Your resume has been downloaded as a text file.",
+        description: "Your resume has been downloaded as a PDF.",
       });
     } catch (error) {
       console.error("Download error:", error);
