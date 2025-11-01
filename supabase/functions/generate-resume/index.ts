@@ -79,11 +79,11 @@ CRITICAL INSTRUCTIONS FOR PROJECTS:
 4. Add quantifiable metrics where logical (e.g., "Improved performance by 40%", "Reduced load time by 2 seconds")
 5. Highlight technical skills and technologies used
 6. Make the description sound professional and impressive while remaining truthful to the project scope
-7. If technologies are missing, infer them based on the project title and common tech stacks
+7. **CRITICAL**: If technologies are missing, CONFIDENTLY infer them based on the project title and add them to the array. DO NOT write "Not specified" or add suggestions in parentheses. Just add the inferred technologies as actual values.
 8. Format each project with:
    - project_title: Keep original
    - description: 2-3 sentence compelling overview
-   - technologies_used: Array of relevant technologies (infer if not provided)
+   - technologies_used: Array of relevant technologies (confidently infer if not provided - NEVER use "Not specified")
    - contributions: Array of 3-5 bullet points describing what was built/achieved
    - duration_start and duration_end: Keep original
    - github_demo_link: Keep original
@@ -104,8 +104,8 @@ Return ONLY a valid JSON object with the following structure:
     {
       "project_title": "original title",
       "description": "compelling 2-3 sentence overview",
-      "technologies_used": ["tech1", "tech2", ...],
-      "contributions": ["bullet point 1", "bullet point 2", ...],
+      "technologies_used": ["tech1", "tech2", "tech3"],
+      "contributions": ["bullet point 1", "bullet point 2", "bullet point 3"],
       "duration_start": "original date",
       "duration_end": "original date",
       "github_demo_link": "original link"
@@ -125,7 +125,7 @@ Input: { "project_title": "AI Resume Builder", "description": "", "technologies_
 Output: {
   "project_title": "AI Resume Builder",
   "description": "Developed an intelligent resume builder application leveraging AI to optimize resumes for ATS systems. Implemented real-time content enhancement and automated formatting features.",
-  "technologies_used": ["React", "Node.js", "TypeScript", "OpenAI API", "Tailwind CSS"],
+  "technologies_used": ["React", "TypeScript", "Node.js", "OpenAI API", "Tailwind CSS", "PostgreSQL"],
   "contributions": [
     "Architected and developed a full-stack web application with React frontend and Node.js backend",
     "Integrated OpenAI API to provide AI-powered resume optimization and content suggestions",
@@ -133,7 +133,9 @@ Output: {
     "Built responsive UI with Tailwind CSS ensuring seamless experience across all devices",
     "Deployed application handling 100+ concurrent users with 99.9% uptime"
   ]
-}`;
+}
+
+REMEMBER: NEVER output "Not specified", "Consider adding", or any suggestions in parentheses. Just confidently add the inferred technologies.`;
 
     const userPrompt = `Create an ATS-optimized resume ${targetRole ? `tailored for ${targetRole} role` : ""} using this data:\n\n${JSON.stringify(resumeData, null, 2)}`;
 
