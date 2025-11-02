@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { codingProblems } from "@/lib/mockData";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function Coding() {
   const [selectedProblem, setSelectedProblem] = useState(codingProblems[0]);
@@ -16,6 +17,8 @@ export default function Coding() {
   const [language, setLanguage] = useState("python");
   const [searchQuery, setSearchQuery] = useState("");
   const [difficultyFilter, setDifficultyFilter] = useState("all");
+  const [output, setOutput] = useState("");
+  const [isRunning, setIsRunning] = useState(false);
 
   const filteredProblems = codingProblems.filter(p => {
     const matchesSearch = p.title.toLowerCase().includes(searchQuery.toLowerCase());
@@ -32,17 +35,48 @@ export default function Coding() {
     }
   };
 
-  const handleRun = () => {
-    toast({
-      title: "Running Code",
-      description: "Executing your code...",
-    });
+  const handleRun = async () => {
+    setIsRunning(true);
+    setOutput("Executing...");
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('execute-code', {
+        body: { code, language, stdin: "" }
+      });
+
+      if (error) {
+        toast({ title: "Error", description: error.message, variant: "destructive" });
+        setOutput(`Error: ${error.message}`);
+        return;
+      }
+
+      // Format Judge0 response
+      if (data.status?.description === "Accepted") {
+        setOutput(`✓ Success\n\nOutput:\n${data.stdout || '(no output)'}\n\nExecution Time: ${data.time}s\nMemory: ${data.memory} KB`);
+        toast({ title: "Success", description: "Code executed successfully!" });
+      } else if (data.compile_output) {
+        setOutput(`✗ Compilation Error\n\n${data.compile_output}`);
+        toast({ title: "Compilation Error", variant: "destructive" });
+      } else if (data.stderr) {
+        setOutput(`✗ Runtime Error\n\n${data.stderr}`);
+        toast({ title: "Runtime Error", variant: "destructive" });
+      } else {
+        setOutput(data.stdout || data.message || 'No output');
+      }
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : 'Unknown error';
+      toast({ title: "Error", description: errorMsg, variant: "destructive" });
+      setOutput(`Error: ${errorMsg}`);
+    } finally {
+      setIsRunning(false);
+    }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    await handleRun();
     toast({
-      title: "Submitting Code",
-      description: "Your code is being evaluated...",
+      title: "Code Submitted",
+      description: "Your solution has been recorded.",
     });
   };
 
@@ -202,11 +236,22 @@ export default function Coding() {
               <div className="flex items-center justify-between">
                 <h3 className="font-semibold">Code Editor</h3>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={handleRun} className="gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={handleRun} 
+                    disabled={isRunning}
+                    className="gap-2"
+                  >
                     <Play className="h-4 w-4" />
-                    Run
+                    {isRunning ? "Running..." : "Run"}
                   </Button>
-                  <Button size="sm" onClick={handleSubmit} className="gap-2">
+                  <Button 
+                    size="sm" 
+                    onClick={handleSubmit} 
+                    disabled={isRunning}
+                    className="gap-2"
+                  >
                     <Check className="h-4 w-4" />
                     Submit
                   </Button>
@@ -220,9 +265,9 @@ export default function Coding() {
               />
               <div className="bg-muted p-3 rounded-lg">
                 <h4 className="font-semibold text-sm mb-2">Output</h4>
-                <p className="text-muted-foreground text-sm">
-                  Run your code to see the output here...
-                </p>
+                <pre className="text-sm whitespace-pre-wrap font-mono">
+                  {output || "Run your code to see the output here..."}
+                </pre>
               </div>
             </div>
           </CardContent>

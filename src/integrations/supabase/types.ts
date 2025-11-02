@@ -198,6 +198,212 @@ export type Database = {
         }
         Relationships: []
       }
+      companies: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          logo_url: string | null
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          logo_url?: string | null
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          logo_url?: string | null
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      company_coding_problems: {
+        Row: {
+          company_id: string
+          constraints: string | null
+          created_at: string
+          description: string
+          difficulty: string
+          id: string
+          sample_input: string | null
+          sample_output: string | null
+          test_cases: Json | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          constraints?: string | null
+          created_at?: string
+          description: string
+          difficulty: string
+          id?: string
+          sample_input?: string | null
+          sample_output?: string | null
+          test_cases?: Json | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          constraints?: string | null
+          created_at?: string
+          description?: string
+          difficulty?: string
+          id?: string
+          sample_input?: string | null
+          sample_output?: string | null
+          test_cases?: Json | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_coding_problems_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      company_gd_topics: {
+        Row: {
+          company_id: string
+          created_at: string
+          description: string | null
+          dos_and_donts: Json | null
+          id: string
+          key_points: Json | null
+          topic: string
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          description?: string | null
+          dos_and_donts?: Json | null
+          id?: string
+          key_points?: Json | null
+          topic: string
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          description?: string | null
+          dos_and_donts?: Json | null
+          id?: string
+          key_points?: Json | null
+          topic?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_gd_topics_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      company_interview_questions: {
+        Row: {
+          category: string | null
+          company_id: string
+          created_at: string
+          expected_answer: string | null
+          id: string
+          question: string
+          tips: Json | null
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          company_id: string
+          created_at?: string
+          expected_answer?: string | null
+          id?: string
+          question: string
+          tips?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          company_id?: string
+          created_at?: string
+          expected_answer?: string | null
+          id?: string
+          question?: string
+          tips?: Json | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_interview_questions_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      company_quizzes: {
+        Row: {
+          company_id: string
+          created_at: string
+          description: string | null
+          difficulty: string | null
+          duration_minutes: number | null
+          id: string
+          questions: Json
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          description?: string | null
+          difficulty?: string | null
+          duration_minutes?: number | null
+          id?: string
+          questions: Json
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          description?: string | null
+          difficulty?: string | null
+          duration_minutes?: number | null
+          id?: string
+          questions?: Json
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_quizzes_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       departments: {
         Row: {
           code: string

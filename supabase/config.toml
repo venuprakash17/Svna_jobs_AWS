@@ -17,3 +17,6 @@ verify_jwt = true
 
 [functions.parse-document]
 verify_jwt = true
+
+[functions.execute-code]
+verify_jwt = true

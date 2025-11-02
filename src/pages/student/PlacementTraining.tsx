@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Code, FileQuestion, Briefcase, Calendar } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import CompanyTraining from "./CompanyTraining";
 
 interface PlacementSession {
   id: string;
@@ -89,9 +90,10 @@ export default function PlacementTraining() {
       </div>
 
       <Tabs defaultValue="sessions" className="w-full">
-        <TabsList className="grid w-full max-w-md grid-cols-2">
+        <TabsList className="grid w-full max-w-2xl grid-cols-3">
           <TabsTrigger value="sessions">Training Sessions</TabsTrigger>
           <TabsTrigger value="coding">Coding Practice</TabsTrigger>
+          <TabsTrigger value="companies">Company Training</TabsTrigger>
         </TabsList>
 
         <TabsContent value="sessions" className="mt-6">
@@ -168,6 +170,10 @@ export default function PlacementTraining() {
               ))
             )}
           </div>
+        </TabsContent>
+
+        <TabsContent value="companies" className="mt-6">
+          <CompanyTraining />
         </TabsContent>
       </Tabs>
     </div>
