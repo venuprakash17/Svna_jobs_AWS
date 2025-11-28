@@ -24,7 +24,7 @@ jobs:
           target: "/var/www/elevate/backend"
           overwrite: true
 
-      - name: Install Python deps and restart backend
+      - name: Install dependencies & restart backend
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -33,24 +33,22 @@ jobs:
           script: |
             cd /var/www/elevate/backend
 
-            # Ensure python3-venv exists
-            sudo apt update -y
-            sudo apt install -y python3-venv python3-full
-
-            # Clean broken venv if exists
+            echo "🔥 Cleaning broken virtualenv if exists"
             if [ -d "venv" ]; then
                 rm -rf venv
             fi
 
-            # Create fresh venv
+            echo "📦 Creating virtual environment"
             python3 -m venv venv
 
-            # Activate venv
+            echo "📌 Activating venv"
             source venv/bin/activate
 
-            # Install deps
+            echo "⬆ Upgrading pip"
             pip install --upgrade pip
+
+            echo "📥 Installing dependencies"
             pip install -r requirements.txt
 
-            # Restart supervisor
+            echo "🔁 Restarting backend via supervisor"
             sudo /usr/bin/supervisorctl restart elevate-backend
