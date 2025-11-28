@@ -2,54 +2,53 @@ name: Deploy Backend to Hostinger VPS
 
 on:
   push:
-    branches: ["main"]
+    branches: [ "main" ]
     paths:
       - "backend/**"
-      - ".github/workflows/deploy-backend.yml"
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - name: Copy Backend to Server
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          source: "backend/*"
-          target: "/var/www/elevate/backend"
-          overwrite: true
+    - name: Copy backend to server
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ secrets.VPS_HOST }}
+        username: ${{ secrets.VPS_USER }}
+        key: ${{ secrets.VPS_SSH_KEY }}
+        source: "backend/*"
+        target: "/var/www/elevate/backend"
+        overwrite: true
 
-      - name: Deploy on Server (Install venv + restart)
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          script: |
-            cd /var/www/elevate/backend
+    - name: Setup backend on server
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.VPS_HOST }}
+        username: ${{ secrets.VPS_USER }}
+        key: ${{ secrets.VPS_SSH_KEY }}
+        script: |
+          cd /var/www/elevate/backend
+          
+          echo "🔥 Removing old virtualenv"
+          rm -rf venv
 
-            echo "🔥 Removing old venv"
-            rm -rf venv
+          echo "📦 Create new venv"
+          python3 -m venv venv
 
-            echo "📦 Creating fresh venv"
-            python3 -m venv venv
+          echo "📌 Activate venv"
+          source venv/bin/activate
 
-            echo "📌 Activating venv"
-            source venv/bin/activate
+          echo "⬆ Upgrade pip"
+          pip install --upgrade pip
 
-            echo "⬆ Upgrading pip"
-            pip install --upgrade pip
+          echo "📥 Install dependencies"
+          pip install -r requirements.txt
 
-            echo "📥 Installing dependencies"
-            pip install -r requirements.txt
-
-            echo "🔁 Restarting Supervisor"
-            sudo supervisorctl reread
-            sudo supervisorctl update
-            sudo supervisorctl restart elevate-backend
+          echo "🔁 Restarting Supervisor"
+          sudo /usr/bin/supervisorctl reread
+          sudo /usr/bin/supervisorctl update
+          sudo /usr/bin/supervisorctl restart elevate-backend
